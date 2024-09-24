@@ -236,19 +236,19 @@ def test_SciKit(X_train, X_test, y_train, y_test):
             number of points correctly classified to be class +1.
     """
 
-    # TODO: initiate an object of the Perceptron type. 
-    "*** YOUR CODE HERE ***"
+    # initiate an object of the Perceptron type. 
+    perceptron = Perceptron()
     
-    # TODO: run the fit function to train the classifier. 
-    "*** YOUR CODE HERE ***" 
+    # run the fit function to train the classifier. 
+    perceptron.fit(X_train, y_train)
     
-    # TODO: use the predict function to perform predictions using the trained
+    # use the predict function to perform predictions using the trained
     # algorithm. 
-    "*** YOUR CODE HERE ***"
+    y_pred = perceptron.predict(X_test)
     
-    # TODO: Use the confusion_matrix function to find the confusion matrix.
-    # Don't forget to return the confusion matrix.
-    "*** YOUR CODE HERE ***"
+    # Use the confusion_matrix function to find the confusion matrix.
+    conf_mat = confusion_matrix(y_test, y_pred)
+    return conf_mat
 
 
 def test_Part1():
