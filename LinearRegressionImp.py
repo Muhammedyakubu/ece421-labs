@@ -30,9 +30,22 @@ def fit_LinRegr(X_train, y_train):
         in the computation.
     """
 
-    # TODO: add your implementation here
-    "*** YOUR CODE HERE ***"
-    pass
+    # Add a column of ones to X_train for the bias term
+    X = np.hstack((np.ones((X_train.shape[0], 1)), X_train))
+    
+    # Compute X^T X
+    XTX = np.matmul(X.transpose(), X)
+    
+    # Compute the pseudo-inverse of X^T X
+    XTX_pseudo_inv = np.linalg.pinv(XTX)
+    
+    # Compute X^T y
+    XTy = np.matmul(X.transpose(), y_train)
+    
+    # Compute the weights
+    w = np.matmul(XTX_pseudo_inv, XTy)
+    
+    return w
 
 
 def mse(X_train, y_train, w):
@@ -58,12 +71,19 @@ def mse(X_train, y_train, w):
         he mean squared error introduced by the linear plane defined by w.
     """
 
-    # TODO: add your implementation here
-    # HINT: You may find the implemented pred function useful. The pred function 
-    # finds the prediction by the linear regression model defined by w for the
-    # input datapoint x_i.
-    "*** YOUR CODE HERE ***"
-    pass
+    # Add a column of ones to X for the bias term
+    X_with_bias = np.hstack((np.ones((X_train.shape[0], 1)), X_train))
+    
+    # Compute predictions
+    y_pred = np.matmul(X_with_bias, w)
+    
+    # Compute the difference between predictions and true values
+    diff = y_pred - y_train
+    
+    # Compute the mean squared error
+    mse = np.mean(np.square(diff))
+    
+    return mse
 
 
 def pred(x_i, w):
