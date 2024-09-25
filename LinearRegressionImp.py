@@ -136,20 +136,19 @@ def test_SciKit(X_train, X_test, y_train, y_test):
         The mean squared error on the test set.
     """
 
-    # TODO: initiate an object of the LinearRegression type. 
-    "*** YOUR CODE HERE ***"
+    # initiate an object of the LinearRegression type. 
+    linreg_model = LinearRegression()
     
-    # TODO: run the fit function to train the model. 
-    "*** YOUR CODE HERE ***" 
+    # run the fit function to train the model. 
+    linreg_model.fit(X_train, y_train) 
     
-    # TODO: use the predict function to perform predictions using the trained
+    # use the predict function to perform predictions using the trained
     # model. 
-    "*** YOUR CODE HERE ***"
+    predictions = linreg_model.predict(X_test)
     
-    # TODO: use the mean_squared_error function to find the mean squared error
+    # use the mean_squared_error function to find the mean squared error
     # on the test set. Don't forget to return the mean squared error.
-    "*** YOUR CODE HERE ***"
-    pass
+    return mean_squared_error(y_test, predictions)
 
 
 def subtestFn():
@@ -200,3 +199,7 @@ if __name__ == "__main__":
 
     print (f"{12*'-'}testFn_Part2{12*'-'}")
     testFn_Part2()
+
+# The mean squared error from the above test is almost identical,
+# with the error varying beginning at the 10th decimal place. 
+# The performance of our implementation is effectively the same as the scikit-learn implementation
