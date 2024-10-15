@@ -60,10 +60,22 @@ class Optimizer:
         return self.heavyball_momentum(gradient)
 
     def adam(self, gradient):
-        # TODO: add your implementation here
-        "*** YOUR CODE STARTS HERE ***"
-        pass
-        "*** YOUR CODE ENDS HERE ***"
+        self.m = (1 - self.beta_m) * gradient  + self.beta_m * self.m
+        
+        self.v = (1 - self.beta_v) * (gradient ** 2) + self.beta_v * self.v
+        
+        m_hat = self.m / (1 - self.beta_m ** self.t)
+        
+        v_hat = self.v / (1 - self.beta_v ** self.t)
+        
+        # Increment the iteration counter
+        self.t += 1
+
+        # Compute update
+        update = -(self.lr * m_hat) / (np.sqrt(v_hat) + self.epsilon)
+        
+        # return the update vector
+        return np.array(update, dtype=np.float64)
 
 
 class MultiClassLogisticRegression:
