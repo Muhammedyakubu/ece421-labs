@@ -60,12 +60,10 @@ class Optimizer:
         return self.heavyball_momentum(gradient)
 
     def adam(self, gradient):
-        self.m = (1 - self.beta_m) * gradient  + self.beta_m * self.m
-        
+        gradient = np.array(gradient, dtype=np.float64)
+        self.m = (1 - self.beta_m) * gradient + self.beta_m * self.m
         self.v = (1 - self.beta_v) * (gradient ** 2) + self.beta_v * self.v
-        
         m_hat = self.m / (1 - self.beta_m ** self.t)
-        
         v_hat = self.v / (1 - self.beta_v ** self.t)
         
         # Increment the iteration counter
@@ -152,76 +150,89 @@ class MultiClassLogisticRegression:
         return self
 
     def add_bias(self, X):
-        # TODO: add your implementation here
-        "*** YOUR CODE STARTS HERE ***"
-        pass
-        "*** YOUR CODE ENDS HERE ***"
+        # add a column of 1 to the leftmost column.
+        return np.hstack([np.ones((X.shape[0], 1)), X])
 
     def unique_classes_(self, y):
-        # TODO: add your implementation here
-        "*** YOUR CODE STARTS HERE ***"
-        pass
-        "*** YOUR CODE ENDS HERE ***"
+        return np.unique(y)
 
     def class_labels_(self, classes):
-        # TODO: add your implementation here
-        "*** YOUR CODE STARTS HERE ***"
-        pass
-        "*** YOUR CODE ENDS HERE ***"
+        return {c: i for i, c in enumerate(classes)}
 
     def one_hot(self, y):
-        # TODO: add your implementation here
-        "*** YOUR CODE STARTS HERE ***"
-        pass
-        "*** YOUR CODE ENDS HERE ***"
+        y_indices = np.array([self.class_labels[label] for label in y])
+        
+        # Create the one-hot encoded matrix
+        one_hot_matrix = np.zeros((len(y), len(self.classes)))
+        one_hot_matrix[np.arange(len(y)), y_indices] = 1
+        
+        return one_hot_matrix
 
     def softmax(self, z):
-        # TODO: add your implementation here
-        "*** YOUR CODE STARTS HERE ***"
-        pass
-        "*** YOUR CODE ENDS HERE ***"
-
+        # Compute the exponential of the values
+        exp_scores = np.exp(z)
+        
+        # Compute the sum of exponentials for each row
+        sum_exp_scores = np.sum(exp_scores, axis=1, keepdims=True)
+        
+        # Divide each exponential by the sum to get probabilities
+        softmax_probs = exp_scores / sum_exp_scores
+        
+        return softmax_probs
+    
     def predict_with_X_aug_(self, X_aug):
-        # TODO: add your implementation here
-        "*** YOUR CODE STARTS HERE ***"
-        pass
-        "*** YOUR CODE ENDS HERE ***"
+        z = np.dot(X_aug, self.weights.T)
+        return self.softmax(z)
 
     def predict(self, X):
-        # TODO: add your implementation here
-        "*** YOUR CODE STARTS HERE ***"
-        pass
-        "*** YOUR CODE ENDS HERE ***"
+        X_aug = self.add_bias(X)
+        return self.predict_with_X_aug_(X_aug)
 
     def predict_classes(self, X):
-        # TODO: add your implementation here
-        "*** YOUR CODE STARTS HERE ***"
-        pass
-        "*** YOUR CODE ENDS HERE ***"
-
+        probs = self.predict(X)
+        # Get the predicted class indices
+        predicted_indices = np.argmax(probs, axis=1)
+        
+        # Convert the indices back to original class labels using self.classes
+        return self.classes[predicted_indices]
+    
     def score(self, X, y):
-        # TODO: add your implementation here
-        "*** YOUR CODE STARTS HERE ***"
-        pass
-        "*** YOUR CODE ENDS HERE ***"
+        y_pred = self.predict_classes(X)
+        return np.mean(y_pred == y)
 
     def evaluate_(self, X_aug, y_one_hot_encoded):
-        # TODO: add your implementation here
-        "*** YOUR CODE STARTS HERE ***"
-        pass
-        "*** YOUR CODE ENDS HERE ***"
+        probs = self.predict_with_X_aug_(X_aug)
+        return np.mean(np.argmax(probs, axis=1) == np.argmax(y_one_hot_encoded, axis=1))
+
 
     def cross_entropy(self, y_one_hot_encoded, probs):
-        # TODO: add your implementation here
-        "*** YOUR CODE STARTS HERE ***"
-        pass
-        "*** YOUR CODE ENDS HERE ***"
+        return -np.sum(y_one_hot_encoded * np.log(probs))/y_one_hot_encoded.shape[0]
 
     def compute_grad(self, X_aug, y_one_hot_encoded, w):
-        # TODO: add your implementation here
-        "*** YOUR CODE STARTS HERE ***"
-        pass
-        "*** YOUR CODE ENDS HERE ***"
+        """
+        Compute the gradient of the cross-entropy loss with respect to the weights.
+        
+        Parameters:
+        X_aug: Augmented input data, shape (N, D+1) where N is number of samples and D is number of features
+        y_one_hot_encoded: One-hot encoded true labels, shape (N, C) where C is number of classes
+        w: Current weights, shape (C, D+1)
+        
+        Returns:
+        gradient: Computed gradient, shape (C, D+1)
+        """
+        # Compute the predicted probabilities using the provided weights w
+        z = np.dot(X_aug, w.T)
+        probs = self.softmax(z)
+        
+        # Compute the difference between predicted probabilities and true labels
+        diff = probs - y_one_hot_encoded
+        
+        # Compute the gradient using the formula: (probs - y_one_hot_encoded).T * X_aug
+        # and scale it by the number of samples
+        N = X_aug.shape[0]  # number of samples
+        gradient = np.dot(diff.T, X_aug) / N
+        
+        return gradient
 
 
 def kmeans(examples, K, maxIters):
@@ -240,3 +251,4 @@ def kmeans(examples, K, maxIters):
     "*** YOUR CODE STARTS HERE ***"
     pass
     "*** YOUR CODE ENDS HERE ***"
+
