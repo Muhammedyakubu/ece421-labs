@@ -127,22 +127,33 @@ class MultiClassLogisticRegression:
             self.loss.append(
                 self.cross_entropy(self.y_one_hot_encoded, self.predict_with_X_aug_(X))
             )
-            "*** YOUR CODE STARTS HERE ***"
-            # TODO: sample a batch of data, X_batch and y_batch, with batch_size number of datapoint uniformly at random
+            
+            # Sample a batch of data
+            batch_indices = np.random.choice(X.shape[0], batch_size, replace=False)
+            X_batch = X[batch_indices]
+            y_batch = self.y_one_hot_encoded[batch_indices]
 
-            # TODO: find the gradient that should be inputed the optimization function.
-            # NOTE: for nestrov_momentum, the gradient is derived at a point different from self.weights
-            # See the assignments handout or the lecture note for more information.
+            # Compute gradient
+            if optimizer == "nestrov_momentum":
+                # For Nesterov momentum, compute gradient at a different point
+                look_ahead_weights = self.weights + opt.gama * opt.v
+                gradient = self.compute_grad(X_batch, y_batch, look_ahead_weights)
+            else:
+                gradient = self.compute_grad(X_batch, y_batch, self.weights)
 
-            # TODO: find the update vector by using the optimization method and update self.weights, accordingly.
+            # Get update from optimizer
+            update = opt.optimize(gradient)
 
-            # TODO: stopping criterion. check if norm infinity of the update vector is smaller than self.thres.
-            # if so, break the while loop.
+            # Update weights
+            self.weights += update
 
-            "*** YOUR CODE ENDS HERE ***"
+            # Check stopping criterion
+            if np.max(np.abs(update)) < self.thres:
+                break
+
             if i % 1000 == 0 and verbose:
                 print(
-                    " Training Accuray at {} iterations is {}".format(
+                    " Training Accuracy at {} iterations is {}".format(
                         i, self.evaluate_(X, self.y_one_hot_encoded)
                     )
                 )
