@@ -192,7 +192,10 @@ class MultiClassLogisticRegression:
         return softmax_probs
     
     def predict_with_X_aug_(self, X_aug):
+        # Compute X_aug * weights
         z = np.dot(X_aug, self.weights.T)
+        
+        # Apply softmax to get probabilities
         return self.softmax(z)
 
     def predict(self, X):
@@ -217,6 +220,7 @@ class MultiClassLogisticRegression:
 
 
     def cross_entropy(self, y_one_hot_encoded, probs):
+        # ∑(y_i * log(p_i)) / N (stack overflow)
         return -np.sum(y_one_hot_encoded * np.log(probs))/y_one_hot_encoded.shape[0]
 
     def compute_grad(self, X_aug, y_one_hot_encoded, w):
