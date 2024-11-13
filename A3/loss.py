@@ -17,8 +17,12 @@ class CrossEntropyLoss():
         -------
         a single float representing the loss
         """
-        ### YOUR CODE HERE ###
-        return ...
+        # Get batch size
+        m = Y.shape[0]
+
+        # Calculate cross entropy loss
+        loss = -1/m * np.sum(Y*np.log(Y_hat))
+        return loss
 
     def backward(self, Y, Y_hat):
         """Backward pass of cross-entropy loss.
@@ -34,5 +38,9 @@ class CrossEntropyLoss():
         the gradient of the cross-entropy loss with respect to the vector of
         predictions, `Y_hat`
         """
-        ### YOUR CODE HERE ###
-        return ...
+        # Get batch size
+        m = Y.shape[0]
+
+        # Calculate gradient
+        dLdYhat = -(Y / Y_hat) / m
+        return dLdYhat

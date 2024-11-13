@@ -174,9 +174,12 @@ class Activation:
         -------
         f(z) as described above. It has the same shape as `Z`
         """
+        # Extract number of training points
         n = Z.shape[0]
         fz = np.zeros_like(Z)
         for value in range(n):
+
+            # Calculates softmax for each training point
             m = np.max(Z[value])
             expZ = np.exp(Z[value]-m)
             fz[value] = expZ/np.sum(expZ)
@@ -197,32 +200,19 @@ class Activation:
         gradient of loss w.r.t. input of the activation function, i.e., 'Z'.
         It is an np.ndarray with the same shape as `Z`.
         """
-        n, k = Z.shape  # batch_size, number of classes
+        # Extract number of classes
+        k = Z.shape[1]
 
-        # Compute the softmax output
-        expZ = np.exp(Z - np.max(Z, axis=1, keepdims=True))  # Subtract max for numerical stability
-        softmax_output = expZ / np.sum(expZ, axis=1, keepdims=True)
+        # Compute the softmax output 
+        softmax = self.forward(Z)
 
-        # Compute the Jacobian matrix for each sample in the batch
-        jacobian = softmax_output[:, :, np.newaxis] * (np.eye(k) - softmax_output[:, np.newaxis, :])
+        # Compute the Jacobian matrix (includes both cases where i != j and i = j)
+        jacobian = softmax[:, :, np.newaxis] * (np.eye(k) - softmax[:, np.newaxis, :])
 
-        # Compute the gradient for each sample
-        grad_Z = np.einsum('ijk,ij->ik', jacobian, dY)
+        # Compute the gradient for each sample (dL/dZ = dY/dZ * dL/dY)
+        dZ = np.einsum('ijk,ij->ik', jacobian, dY)
 
-        return grad_Z
-        # n, k = Z.shape
-        
-        # dLdZ = np.zeros_like(Z)
-        # for value in range(n):
-        #     dYdZ = np.zeros((k, k))
-        #     for i in range(k):
-        #         for j in range(k):
-        #             if i == j:
-        #                 dYdZ[i, j] = Z[value, i] * (1 - Z[value, i])
-        #             else:
-        #                 dYdZ[i, j] = -Z[value, i] * Z[value, j]
-        #     dLdZ[value] = np.dot(dYdZ, dLdZ[value])
-        # return dLdZ
+        return dZ
         
 
     def forward_sigmoid(self, Z):
