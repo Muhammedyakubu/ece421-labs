@@ -139,7 +139,7 @@ class Activation:
         f(z): as described above applied elementwise to `Z`
         """
         fz = np.maximum(0, Z)
-        print(fz)
+        # print(fz)
         return fz
 
     def backward_relu(self, Z, dY):

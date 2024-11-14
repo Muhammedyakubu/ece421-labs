@@ -60,6 +60,7 @@ class FullyConnectedLayer():
         
         # store information necessary for backprop in `self.cache`
         self.cache["Z"] = Z
+        self.cache["X"] = X
         
         ### END YOUR CODE ###
 
@@ -67,45 +68,37 @@ class FullyConnectedLayer():
 
     def backward(self, dLdY):
         """Backward pass for fully connected layer.
-        Compute the gradients of the loss with respect to:
-            1. the weights of this layer (mutate the `gradients` dictionary)
-            2. the bias of this layer (mutate the `gradients` dictionary)
-            3. the input of this layer (return this)
-
+        
         Parameters
         ----------
         dLdY  gradient of the loss with respect to the output of this layer
               shape (batch_size, output_dim)
-
+        
         Returns
         -------
         gradient of the loss with respect to the input of this layer
         shape (batch_size, input_dim)
         """
-        ### BEGIN YOUR CODE ###
-        
         # unpack the cache
         Z = self.cache["Z"]
+        X = self.cache["X"]  # Need to store X in forward pass
         
-        # compute the gradients of the loss w.r.t. all parameters as well as the
-        # input of the layer
-		
+        # compute gradients
         dLdZ = self.activation.backward(Z, dLdY)
         
-        dX = np.dot(dLdZ, np.transpose(self.parameters["W"]))
-        dW = np.dot(np.transpose(self.n_in), dLdZ)
-        db = np.sum(dLdZ, axis=0, keepdims=True)
-
-        # store the gradients in `self.gradients`
-        # the gradient for self.parameters["W"] should be stored in
-        # self.gradients["W"], etc.
+        # dX: (batch_size, input_dim)
+        dX = np.dot(dLdZ, self.parameters["W"].T)
         
+        # dW: (input_dim, output_dim)
+        dW = np.dot(X.T, dLdZ)
+        
+        # db: (1, output_dim)
+        db = np.sum(dLdZ, axis=0, keepdims=True)
+        
+        # store the gradients
         self.gradients["W"] = dW
         self.gradients["b"] = db
-
         
-        ### END YOUR CODE ###
-
         return dX
     
     def clear_gradients(self):

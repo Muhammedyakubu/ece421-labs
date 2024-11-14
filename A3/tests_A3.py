@@ -388,4 +388,25 @@ def check_gradients(fn, grad, x, dLdf, h=1e-6):
     return np.linalg.norm(numgrad - grad) / np.linalg.norm(numgrad + grad)
 
 if __name__ == '__main__':
-    test_activation_softmax_backward()
+    # Get all attributes defined in this module
+    for attr_name in dir():
+        # Get the actual attribute
+        tests_to_skip = [
+            # optional test
+            "test_gradients_optional_sigmoid", 
+            # util functions
+            "test_result_print",
+            "check_gradients"
+        ]
+        attr = globals()[attr_name]
+        # Check if it's a function and starts with "test"
+        if callable(attr) and attr_name.startswith('test'):
+            # Call the test function
+            if attr_name in tests_to_skip:
+                print(f"Skipping {attr_name}")
+            else:
+                print(f"Running {attr_name}")
+                attr()
+    # test_gradients_activation()
+    # test_gradients_optional_sigmoid()
+    # test_gradients_fully_connected_layer()

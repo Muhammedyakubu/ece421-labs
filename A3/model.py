@@ -69,8 +69,10 @@ class NeuralNetworkModel():
         -------
         forward pass output, matches the shape of the output of the last layer
         """
-        ### YOUR CODE HERE ###
-        return ...
+        current_input = X
+        for layer in self.layers:
+            current_input = layer.forward(current_input)
+        return current_input
 
     def backward(self, target, out):
         """One backward pass through all the layers of the neural network.
@@ -91,10 +93,17 @@ class NeuralNetworkModel():
         -------
         the loss of the model given the training inputs and targets
         """
-        ### YOUR CODE HERE ###
-        # Compute the loss.
-        # Backpropagate through the network's layers.
-        return ...
+        # Compute the loss
+        loss = self.loss.forward(target, out)
+    
+        # Get initial gradient from loss function
+        gradient = self.loss.backward(target, out)
+        
+        # Backpropagate through layers in reverse order
+        for layer in reversed(self.layers):
+            gradient = layer.backward(gradient)
+        
+        return loss
 
     def update(self, epoch):
         """One step of gradient update using the derivatives calculated by
@@ -244,7 +253,10 @@ class NeuralNetworkModel():
         -------
         a tuple of the prediction and loss
         """
-        ### YOUR CODE HERE ###
-        # Do a forward pass.
-        # Get the loss. Remember that the `backward` function returns the loss.
-        return ...
+        # Do forward pass
+        predictions = self.forward(X)
+        
+        # Get the loss
+        loss = self.loss.forward(Y, predictions)
+        
+        return predictions, loss
