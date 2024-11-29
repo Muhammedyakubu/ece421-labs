@@ -24,7 +24,9 @@ def train_loop(dataloader,
     # Don't forget to set the gradients to zero with 
     # optimizer.zero_grad(), after each update.
     # Our implementation has 3 lines of code, but feel free to deviate from that
-        
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
 
     ## YOUR CODE ENDS HERE ##
 

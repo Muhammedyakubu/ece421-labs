@@ -18,13 +18,13 @@ class VanillaRNN(nn.Module):
     # implement self.rnn which should apply a single-layer Elman RNN with 
     # tanh or ReLU non-linearity to an input sequence.
     # HINT: It is just one line 0f code looking like `self.rnn = nn.RNN(...)`.
-    self.rnn = ...
+    self.rnn = nn.RNN(input_size, hidden_size, nonlinearity=nonlinearity, batch_first=True)
     ## YOUR CODE ENDS HERE ##
     
     #### YOUR CODE HERE ####
     # implement self.fc which is the readout layer
     # HINT: It is just one line of code looking like `self.fc = nn.Linear(...).
-    self.fc = ...
+    self.fc = nn.Linear(hidden_size, output_size)
     ## YOUR CODE ENDS HERE ##
 
   def forward(self, x):
@@ -48,8 +48,10 @@ class VanillaRNN(nn.Module):
     # by self.fc, you can return the last output from self.fc.
     # Our implementation has 3 lines of code, but feel free to deviate from that
     
-
-
+    output, hidden = self.rnn(x, h0)  # Process the entire sequence
+    last_hidden = hidden[-1]  # Get the final hidden state
+    out = self.fc(last_hidden)  # Pass through the fully connected layer
+    
     ## YOUR CODE ENDS HERE ##
     
     return out
