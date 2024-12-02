@@ -48,9 +48,9 @@ class VanillaRNN(nn.Module):
     # by self.fc, you can return the last output from self.fc.
     # Our implementation has 3 lines of code, but feel free to deviate from that
     
-    output, hidden = self.rnn(x, h0)  # Process the entire sequence
-    last_hidden = hidden[-1]  # Get the final hidden state
-    out = self.fc(last_hidden)  # Pass through the fully connected layer
+    out, _ = self.rnn(x, h0)  # Process the entire sequence
+    out = out[:, -1, :]  # Get hidden state of last timestep
+    out = self.fc(out).unsqueeze(-1)  # Pass through the fully connected layer
     
     ## YOUR CODE ENDS HERE ##
     
@@ -68,13 +68,13 @@ class SimpleLSTM(nn.Module):
     ### YOUR CODE HERE ###
     # implement self.lstm which applies a single-layer lstm to an input sequence.
     # HINT: It is just one line 0f code looking like `self.lstm = nn.LSTM(...)`.
-    self.lstm = ...
+    self.lstm = nn.LSTM(input_size, hidden_size, num_layers=1, batch_first=True)
     ## YOUR CODE ENDS HERE ##
     
     ### YOUR CODE HERE ###
     # implement self.fc which is the readout layer
     # HINT: It is just one line of code looking like `self.fc = nn.Linear(...).
-    self.fc = ...
+    self.fc = nn.Linear(hidden_size, output_size)
     ## YOUR CODE ENDS HERE ##
   
   def forward(self, x):
@@ -99,7 +99,9 @@ class SimpleLSTM(nn.Module):
     # self.lstm followed by self.fc, you can return the last output from self.fc
     # Our implementation has 3 lines of code, but feel free to deviate from that
     
-    
+    out, (_, _) = self.lstm(x, (h0, c0))  # Process the entire sequence
+    out = out[:, -1, :]  # Get hidden state of last timestep
+    out = self.fc(out).unsqueeze(-1)  # Pass through the fully connected layer
     
     ## YOUR CODE ENDS HERE ##
     
